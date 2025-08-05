@@ -68,3 +68,71 @@ SELECT * FROM users LIMIT 3;
 SELECT * FROM users WHERE email IS NULL;
 SELECT * FROM users WHERE email IS NOT NULL;
 SELECT * FROM users WHERE email IS NOT NULL AND age = 15;
+
+-- MIN and MAX
+SELECT MAX(age) FROM users;
+SELECT MIN(age) FROM users;
+
+-- COUNT (cuenta cantidad de datos en dicha columna)
+SELECT COUNT(age) FROM users;
+
+-- AVG (sacar la media)
+SELECT AVG(age) FROM users;
+
+-- IN (traer datos estando seguros del criterio de busqueda)
+SELECT * FROM users WHERE name IN ('monica', 'sara');
+
+-- BETWEEN (encontrar resultados que se comprenden entre 2 valores)
+SELECT * FROM users WHERE age BETWEEN 20 AND 35; 
+
+-- ALIAS ('AS')
+SELECT name, age, init_date AS 'init date' FROM users WHERE age BETWEEN 20 AND 35; 
+
+-- CONCAT (concatenamos cadenas)
+SELECT CONCAT(name, ' ', surname) AS 'Nombre completo', age, email FROM users;
+
+-- GROUP BY (agrupa filas que tienen mismos valores, trabaja con filas-resumen)
+SELECT MAX(age) FROM users GROUP BY age;
+SELECT COUNT(age) AS 'Cantidad', age FROM users GROUP BY age;
+SELECT COUNT(age) AS 'Cantidad', age FROM users GROUP BY age ORDER BY age ASC;
+SELECT COUNT(age) AS 'Cantidad', age FROM users WHERE age > 15 GROUP BY age ORDER BY age DESC;
+
+-- HAVING (limitamos una propia columna agregada)
+SELECT COUNT(age) FROM users HAVING COUNT(age) > 6;
+
+-- CASE (decidir en función de un resultado lo que va a pasar)
+SELECT *,
+CASE
+	WHEN age >= 18 THEN 'Es mayor de edad'
+  ELSE 'Es menor de edad'
+END AS 'Verificador'
+FROM users;
+
+SELECT *,
+CASE
+	WHEN age >= 18 THEN TRUE
+    ELSE FALSE
+END AS '¿Es mayor de edad?'
+FROM users;
+
+SELECT *,
+CASE
+	WHEN age > 18 THEN 'Es mayor de edad'
+    WHEN age = 18 THEN 'Acaba de cumplir la mayoria de edad'
+    ELSE 'Es menor de edad'
+END AS '¿Es mayor de edad?'
+FROM users;
+
+-- IFNULL
+SELECT name, surname, IFNULL(init_date, 0) AS 'Fecha de inicio' FROM users;
+
+-- CRUD BASICO
+-- INSERT
+INSERT INTO users (user_id, name, surname) VALUES (9,'Maria','Lopez');
+
+-- UPDATE
+UPDATE users SET age = 21 WHERE user_id = 9;
+UPDATE users SET age = 25, init_date = '2020-08-11' WHERE user_id = 9;
+
+-- DELETE
+DELETE FROM users WHERE user_id = 7;
