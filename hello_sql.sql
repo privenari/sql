@@ -183,3 +183,71 @@ CREATE TABLE users_languages (
   FOREIGN KEY (user_id) REFERENCES users (user_id),
   FOREIGN KEY (language_id) REFERENCES languages (language_id)
 );
+
+-- INSERTAR DATOS PARA TABLAS 1:1
+-- TABLA 'DNI'
+SELECT * FROM dni;
+
+-- QUERY
+INSERT INTO dni (dni_number, user_id) VALUE (18456239,2);
+INSERT INTO dni (dni_number, user_id) VALUE (25673918,5);
+INSERT INTO dni (dni_number, user_id) VALUE (91837465,9);
+
+-- INSERTAR DATOS PARA TABLAS 1:N
+-- TABLA 'COMPANIES'
+SELECT * FROM companies;
+
+INSERT INTO companies (name_companies) VALUE ('TecnoVision Ltda.');
+INSERT INTO companies (name_companies) VALUE ('AgroAndes S.A.');
+INSERT INTO companies (name_companies) VALUE ('BioLife Chile SpA');
+INSERT INTO companies (name_companies) VALUE ('Constructora del Sur Ltda.');
+
+-- Dado que el campo de la columna 'id_companies' esta creado pero cuenta con datos 'null' no podemos aplicar un insert into
+INSERT INTO users (user_id, id_companies) VALUE (1, 4);
+-- INSERT INTO users (user_id, id_companies) VALUE (1, 4)
+
+UPDATE users SET id_companies = 4 WHERE user_id = 1;
+UPDATE users SET id_companies = 1 WHERE user_id = 2;
+UPDATE users SET id_companies = 3 WHERE user_id = 5;
+UPDATE users SET id_companies = 2 WHERE user_id = 9;
+
+-- INSERTAR DATOS PARA TABLAS M:N
+-- TABLA 'LANGUAGES'
+SELECT * FROM languages;
+
+INSERT INTO languages (name) VALUE ('Python');
+INSERT INTO languages (name) VALUE ('JavaScript');
+INSERT INTO languages (name) VALUE ('Java');
+INSERT INTO languages (name) VALUE ('C');
+INSERT INTO languages (name) VALUE ('C++');
+INSERT INTO languages (name) VALUE ('C#');
+INSERT INTO languages (name) VALUE ('PHP');
+INSERT INTO languages (name) VALUE ('Go');
+INSERT INTO languages (name) VALUE ('Ruby');
+
+-- TABLA INTERMEDIA
+SELECT * FROM users_languages;
+
+INSERT INTO users_languages (user_id, language_id) VALUE (3,5);
+INSERT INTO users_languages (user_id, language_id) VALUE (3,2);
+INSERT INTO users_languages (user_id, language_id) VALUE (3,7);
+INSERT INTO users_languages (user_id, language_id) VALUE (5,1);
+INSERT INTO users_languages (user_id, language_id) VALUE (5,7);
+
+-- Tocara modificar la tabla dado que no tiene logica que se pueda guardar un user_id sin definirle su lenguaje, lo mismo si tiene definido un
+-- lenguaje pero no un usuario, por lo que ninguna de los dos valores deberia ser null
+INSERT INTO users_languages (user_id) VALUE (2);
+INSERT INTO users_languages (language_id) VALUE (7);
+
+UPDATE users_languages SET user_id = 8 WHERE users_language_id = 7;
+UPDATE users_languages SET language_id = 3 WHERE users_language_id = 6;
+
+-- Modificamos una columna dentro de la tabla
+ALTER TABLE users_languages MODIFY COLUMN user_id int NOT NULL;
+ALTER TABLE users_languages MODIFY COLUMN language_id int NOT NULL;
+
+INSERT INTO users_languages (user_id) VALUE (5);
+-- Error Code: 1364. Field 'language_id' doesn't have a default value
+
+INSERT INTO users_languages (language_id) VALUE (1);
+-- Error Code: 1364. Field 'user_id' doesn't have a default value
