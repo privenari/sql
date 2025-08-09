@@ -136,3 +136,50 @@ UPDATE users SET age = 25, init_date = '2020-08-11' WHERE user_id = 9;
 
 -- DELETE
 DELETE FROM users WHERE user_id = 7;
+
+-- DROP (eliminar la base de datos)
+DROP DATABASE test;
+
+-- MANEJO DE TABLAS
+-- RELACIÖN 1:1 CON LA TABLA 'users'
+CREATE TABLE dni (
+  dni_id int NOT NULL AUTO_INCREMENT,
+  dni_number int NOT NULL,
+  user_id int,
+  UNIQUE (dni_id),
+  PRIMARY KEY(dni_id),
+  FOREIGN KEY(user_id) REFERENCES users(user_id)
+);
+
+-- RELACIÖN 1:N CON LA TABLA 'users'
+CREATE TABLE companies (
+	id_companies int NOT NULL AUTO_INCREMENT,
+  name_companies varchar(50) NOT NULL,
+  PRIMARY KEY (id_companies)
+);
+
+-- AGREGAMOS LA COLUMNA 'id_companies' PARA QUE DESPUES SE VISUALICE EN QUE COMPAÑIA TRABAJA CADA USER 
+ALTER TABLE users
+ADD id_companies int
+
+-- DEFINIMOS QUE LA COLUMNA AÑADIDA TAMBIEN SERA LA CLAVE FORANEA
+ALTER TABLE users
+ADD FOREIGN KEY(id_companies) REFERENCES companies(id_companies);
+
+-- RELACION N:N CON LA TABLA 'USERS'
+CREATE TABLE languages (
+  language_id int NOT NULL AUTO_INCREMENT,
+  name varchar(50) NOT NULL,
+  UNIQUE (language_id),
+  PRIMARY KEY(language_id)
+);
+
+-- COMO DEFINIMOS, AL SER RELACIONES N:N ES NECESARIO CREAR TABLAS INTERMEDIAS, ESTAS SUELEN LLEVAR EL NOMBRE DE LAS DOS TABLAS A UTILIZAR
+CREATE TABLE users_languages (
+  users_language_id int NOT NULL AUTO_INCREMENT,
+  user_id int,
+  language_id int,
+  UNIQUE (users_language_id, user_id, language_id),
+  FOREIGN KEY (user_id) REFERENCES users (user_id),
+  FOREIGN KEY (language_id) REFERENCES languages (language_id)
+);
