@@ -251,3 +251,72 @@ INSERT INTO users_languages (user_id) VALUE (5);
 
 INSERT INTO users_languages (language_id) VALUE (1);
 -- Error Code: 1364. Field 'user_id' doesn't have a default value
+
+-- JOIN, COMBINACION DE TABLAS
+-- INNER JOIN
+-- LEFT JOIN
+-- RIGHT JOIN
+-- FULL JOIN
+
+-- INNER JOIN 1:1 'users y dni' = OBTIENEN LOS DATOS COMUNES DE AMBAS TABLAS
+SELECT * FROM users u
+INNER JOIN dni d
+ON u.user_id = d.user_id;
+
+SELECT u.user_id, u.name, u.surname, u.name, u.id_companies, d.dni_number AS 'dni number' FROM users u
+INNER JOIN dni d
+ON u.user_id = d.user_id
+ORDER BY dni_number DESC;
+
+-- INNER JOIN 1:N 'empresas y users'
+SELECT * FROM users u
+INNER JOIN companies c
+ON u.id_companies = c.id_companies;
+
+SELECT u.name, u.surname, u.age, u.email, c.name_companies FROM users u
+INNER JOIN companies c
+ON u.id_companies = c.id_companies;
+
+-- INNER JOIN M:N, join a 3 tablas 'users, users_language, language'
+SELECT * FROM users_languages ul
+INNER JOIN users u ON u.user_id = ul.user_id
+JOIN languages l ON l.language_id = ul.language_id;
+
+SELECT u.user_id, u.name, u.age, l.name FROM users_languages ul
+INNER JOIN users u ON u.user_id = ul.user_id
+JOIN languages l ON l.language_id = ul.language_id
+ORDER BY user_id ASC;
+
+-- LEFT JOIN (1:1) 'users y dni'
+SELECT * FROM dni;
+
+SELECT * FROM users u
+LEFT JOIN dni ON dni.user_id = u.user_id;
+
+SELECT * FROM dni d
+LEFT JOIN users u ON d.user_id = u.user_id;
+
+-- RIGHT JOIN (1:1) 'users y dni'
+
+SELECT * FROM users u
+RIGHT JOIN dni ON dni.user_id = u.user_id;
+
+SELECT * FROM dni d
+RIGHT JOIN users u ON d.user_id = u.user_id;
+
+-- FULL JOIN (UNION) = se queda con todo (datos a la izq. y a la der.), es complejo y por lo mismo no del todo utilizado
+SELECT * FROM users u
+FULL JOIN dni d
+ON u.users_id = d.users_id;
+-- Error Code: 1064. You have an error in your SQL syntax; check the manual that corresponds to your MySQL server 
+-- version for the right syntax to use near 'FULL JOIN dni d ON u.users_id = d.users_id' at line 2
+
+SELECT u.user_id AS u_user_id, d.user_id AS d_user_id
+FROM users u
+LEFT JOIN dni d
+ON u.user_id = d.user_id
+UNION
+SELECT u.user_id AS u_user_id, d.user_id AS d_user_id
+FROM users u
+RIGHT JOIN dni d
+ON u.user_id = d.user_id
