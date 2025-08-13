@@ -320,3 +320,122 @@ SELECT u.user_id AS u_user_id, d.user_id AS d_user_id
 FROM users u
 RIGHT JOIN dni d
 ON u.user_id = d.user_id
+
+-- INDEX (consultar datos y hacer operaciones sobre dicha tabla mucho más rapido, se utilizan para mejorar el rendimiento)
+-- Primarios relacionados con la PK de la tabla
+-- Compuestos que permiten la utilización de 2 o más columnas
+-- Unicos que aseguran que las filas de las tablas no tengan valores duplicados
+-- Los indices hacen que la tabla pese más, ocupa más memoria
+
+CREATE INDEX idx_name ON users(name);
+SELECT * FROM users WHERE name = 'Sara';
+
+CREATE INDEX idx_name_surname ON users(name, surname);
+SELECT * FROM users WHERE name = 'Miriam' OR surname = 'Lopez';
+
+-- BORRAR UN INDEX
+DROP INDEX idx_name ON users;
+
+-- TRIGGER
+-- Disparador/Funciones que se ejecutar automaticamente cuando ocurren
+-- eventos en la tabla, no son consultas que nosotros ejecutamos
+
+CREATE TABLE email_history (
+	id_email_history int NOT NULL AUTO_INCREMENT,
+    id_user int NOT NULL,
+    email varchar(50),
+    UNIQUE(id_email_history)
+);
+
+SELECT * FROM email_history;
+
+-- CONCEPTOS AVANZADOS
+-- Creació nde trigger en la tabla 'users' para cuando hay un cambio de email
+CREATE TRIGGER tg_email
+BEFORE/AFTER INSERT/UPDATE/DELETE
+ON users
+
+DELIMITER $$
+
+CREATE TRIGGER tg_email
+AFTER UPDATE
+ON users
+FOR EACH ROW 
+BEGIN
+	IF OLD.email <> NEW.email THEN
+		INSERT INTO email_history (id_user, email)
+		VALUES (OLD.user_id, OLD.email);
+	END IF;
+END$$
+
+DELIMITER ;
+
+-- ELIMINAR TRIGGER
+DROP TRIGGER tg_email;
+
+UPDATE users SET email = 'saraFrancis@gmail.com' WHERE user_id = 2;
+
+-- VIEW = Representación vistual de una o más tablas, el como se representaria una consulta en formato tabla 
+-- (comunmente utilizado en consultas que necesitamos visualizar y sean repetitivas)
+CREATE VIEW v_adult_ages AS
+SELECT name, age
+FROM users
+WHERE age >= 18;
+
+SELECT * FROM v_adult_ages;
+
+-- ELIMINAR VIEW
+DROP VIEW v_adult_ages;
+
+-- STORED PROCEDURE = procedimiento almacenado, una query guardada en favoritos
+DELIMITER $$
+
+CREATE PROCEDURE p_all_users()
+BEGIN
+	SELECT * FROM users;
+END$$
+
+DELIMITER ;
+
+-- Ejecutar procedimiento almacenado
+CALL p_all_users;
+
+-- OTRO PROCEDIMIENTO, si quisieramos ingresarle un parametro podemos pasarselo mediante el IN 
+-- (de lo que queremos parametrizar más el tipo de dato), dandonos
+-- acceso al campo parametrizable
+DELIMITER $$
+
+CREATE PROCEDURE p_age_users(IN age int) 
+BEGIN
+	SELECT * FROM users WHERE age = age;
+END$$
+
+DELIMITER ;
+
+-- TRAE TODO, por lo que esta mal el procedimiento
+CALL p_age_users(30);
+
+DROP PROCEDURE p_age_users;
+
+-- OTRO PROCEDURE
+DELIMITER $$
+
+CREATE PROCEDURE p_age_users(IN age_param int) 
+BEGIN
+	SELECT * FROM users WHERE age = age_param;
+END$$
+
+DELIMITER ;
+
+CALL p_age_users(32);
+
+-- TRANSACCION
+START TRANSACTION
+COMMIT
+ROLLBACK
+
+-- CONCURRENCIA = Para cuando varios usuarios intentan hacer lo mismo en una base de datos. Las bases de datos y los motores
+-- de bases de datos permiten configurar distintas reglas de concurrencia, comunmente bloquean campos para que 2 usuarios no
+-- actualicen al mismo tiempo el mismo dato, bloqueando tablas, filas.
+
+-- CONECTORES = consultar una base de datos desde python
